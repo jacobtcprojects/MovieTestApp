@@ -1,6 +1,7 @@
 package com.challenge.jacobtcantera.movietestapp.di;
 
-import com.challenge.jacobtcantera.movietestapp.view.MainActivity;
+
+import com.challenge.jacobtcantera.movietestapp.presentation.view.activities.MainActivity;
 
 import javax.inject.Singleton;
 

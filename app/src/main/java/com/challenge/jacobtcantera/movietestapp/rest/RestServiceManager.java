@@ -2,6 +2,8 @@ package com.challenge.jacobtcantera.movietestapp.rest;
 
 import android.support.annotation.NonNull;
 
+import com.challenge.jacobtcantera.movietestapp.rest.response.MovieResponse;
+
 import io.reactivex.Single;
 
 /**

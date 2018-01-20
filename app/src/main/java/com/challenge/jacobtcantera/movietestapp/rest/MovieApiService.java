@@ -1,5 +1,7 @@
 package com.challenge.jacobtcantera.movietestapp.rest;
 
+import com.challenge.jacobtcantera.movietestapp.rest.response.MovieResponse;
+
 import io.reactivex.Single;
 import retrofit2.http.GET;
 import retrofit2.http.Query;

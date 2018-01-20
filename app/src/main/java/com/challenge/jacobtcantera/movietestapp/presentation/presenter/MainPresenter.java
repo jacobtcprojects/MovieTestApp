@@ -1,8 +1,10 @@
-package com.challenge.jacobtcantera.movietestapp.view;
+package com.challenge.jacobtcantera.movietestapp.presentation.presenter;
 
-import android.util.Log;
-
+import com.challenge.jacobtcantera.movietestapp.domain.model.Movie;
+import com.challenge.jacobtcantera.movietestapp.domain.model.mapper.MovieMapper;
 import com.challenge.jacobtcantera.movietestapp.rest.RestServiceManager;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -14,35 +16,38 @@ import io.reactivex.schedulers.Schedulers;
  */
 
 public class MainPresenter {
-    public interface View {   }
+    public interface View {
+        void addMovies(List<Movie> list);
+    }
 
     private View view;
 
     private RestServiceManager restServiceManager;
+    private MovieMapper movieMapper;
+
     @Inject
-    public MainPresenter(RestServiceManager restServiceManager) {
+    public MainPresenter(RestServiceManager restServiceManager, MovieMapper movieMapper) {
         this.restServiceManager = restServiceManager;
+        this.movieMapper = movieMapper;
     }
 
     public void initView(View view) {
         this.view = view;
     }
 
-    public void destroyView(){
+    public void destroyView() {
         this.view = null;
     }
 
-    public void doCall() {
+    public void getMovies() {
         restServiceManager
                 .getPopularMoviesCall(1)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(movieResponse -> log(movieResponse.getResults().get(1).getTitle()),
+                .subscribe(
+                        movieResponse -> view.addMovies(movieMapper
+                                .transformList(movieResponse.getResults())),
                         Throwable::printStackTrace);
 
-    }
-
-    private void log(String title) {
-        Log.d("MainPresenter", title);
     }
 }
