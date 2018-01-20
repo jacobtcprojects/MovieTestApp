@@ -5,11 +5,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.challenge.jacobtcantera.movietestapp.R;
 import com.challenge.jacobtcantera.movietestapp.domain.model.Movie;
-import com.challenge.jacobtcantera.movietestapp.rest.response.MovieResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +38,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.textViewTitle.setText(listOfMovies.get(position).getTitle());
+        holder.bind(listOfMovies.get(position));
     }
 
     @Override
@@ -51,12 +52,26 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
+        private Movie movie;
         @BindView(R.id.tv_title) TextView textViewTitle;
+        @BindView(R.id.tv_release_date) TextView textViewReleaseDate;
+        @BindView(R.id.tv_overview) TextView textViewOverview;
+        @BindView(R.id.image_cover) ImageView imageViewCover;
 
         ViewHolder(View view) {
             super(view);
             ButterKnife.bind(this,
                     itemView);
+        }
+
+        public void bind(final Movie movie) {
+            this.movie = movie;
+            textViewTitle.setText(movie.getTitle());
+            textViewReleaseDate.setText(movie.getReleaseDate());
+            textViewOverview.setText(movie.getOverview());
+            Glide.with(itemView)
+                    .load(movie.getImageUrl())
+                    .into(imageViewCover);
         }
     }
 }

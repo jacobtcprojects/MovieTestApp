@@ -5,6 +5,8 @@ package com.challenge.jacobtcantera.movietestapp.domain.model;
  */
 
 public class Movie {
+    private static final String BASE_URL = "http://image.tmdb.org/t/p/";
+    private static final String COVER_SIZE = "w342";
 
     private String title;
     private String overview;
@@ -32,5 +34,9 @@ public class Movie {
 
     public String getImage() {
         return image;
+    }
+
+    public String getImageUrl() {
+        return BASE_URL + COVER_SIZE + image;
     }
 }
