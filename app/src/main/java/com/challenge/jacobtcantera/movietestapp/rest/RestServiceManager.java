@@ -11,8 +11,6 @@ import io.reactivex.Single;
  */
 
 public interface RestServiceManager {
-    Single<MovieResponse> getPopularMoviesCall(@NonNull int page);
-
-    Single<MovieResponse> getSearchByKeywordCall(@NonNull String keyword,
-                                               @NonNull int page);
+    MovieApiService getMovieApiService();
+    String getApiKey();
 }

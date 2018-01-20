@@ -1,8 +1,12 @@
 package com.challenge.jacobtcantera.movietestapp.presentation.presenter;
 
+import android.support.annotation.Nullable;
+
 import com.challenge.jacobtcantera.movietestapp.domain.model.Movie;
 import com.challenge.jacobtcantera.movietestapp.domain.model.mapper.MovieMapper;
+import com.challenge.jacobtcantera.movietestapp.rest.MovieApiService;
 import com.challenge.jacobtcantera.movietestapp.rest.RestServiceManager;
+import com.challenge.jacobtcantera.movietestapp.rest.response.MovieResponse;
 
 import java.util.List;
 
@@ -16,11 +20,21 @@ import io.reactivex.schedulers.Schedulers;
  */
 
 public class MainPresenter {
+
+    private int page;
+    private MovieApiService movieApiService;
+
     public interface View {
         void addMovies(List<Movie> list);
+        void showError();
+        boolean isProgressShown();
+        void showProgress();
+        void hideProgress();
+        void showRetryButton();
+        void hideRetryButton();
     }
 
-    private View view;
+    @Nullable private View view;
 
     private RestServiceManager restServiceManager;
     private MovieMapper movieMapper;
@@ -33,6 +47,7 @@ public class MainPresenter {
 
     public void initView(View view) {
         this.view = view;
+        page = 1;
     }
 
     public void destroyView() {
@@ -40,14 +55,46 @@ public class MainPresenter {
     }
 
     public void getMovies() {
+        if (view != null && !isProgressShown()) view.showProgress();
         restServiceManager
-                .getPopularMoviesCall(1)
+                .getMovieApiService()
+                .getPopularMovies(restServiceManager.getApiKey(), page)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        movieResponse -> view.addMovies(movieMapper
-                                .transformList(movieResponse.getResults())),
-                        Throwable::printStackTrace);
+                .subscribe(this::addMovies,
+                        throwable -> showError());
+    }
 
+    private void addMovies(MovieResponse movieResponse) {
+        if (view != null) {
+            view.hideProgress();
+            view.addMovies(movieMapper
+                    .transformList(movieResponse.getResults()));
+        }
+    }
+
+    public void loadMoreMovies() {
+        if (!isProgressShown()) {
+            if (view != null) {
+                view.showProgress();
+                page++;
+                getMovies();
+            }
+        }
+    }
+
+    private void showError() {
+        if (view != null) {
+            view.hideProgress();
+            view.showError();
+            view.showRetryButton();
+        }
+    }
+
+    private boolean isProgressShown() {
+        if (view != null) {
+            return view.isProgressShown();
+        }
+        return false;
     }
 }

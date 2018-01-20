@@ -43,17 +43,13 @@ public class RestServiceManagerImpl implements RestServiceManager {
         return okHttpClientBuilder.build();
     }
 
-    @Override public Single<MovieResponse> getPopularMoviesCall(@NonNull int page){
-        return getMovieApiService().getPopularMovies(APP_KEY, page);
-    }
-
-    @Override public Single<MovieResponse> getSearchByKeywordCall(@NonNull String keyword,
-                                                                @NonNull int page){
-        return getMovieApiService().searchByKeyword(APP_KEY, keyword, page);
-    }
-
-
+    @Override
     public MovieApiService getMovieApiService() {
         return movieApiService;
+    }
+
+    @Override
+    public String getApiKey() {
+        return APP_KEY;
     }
 }
