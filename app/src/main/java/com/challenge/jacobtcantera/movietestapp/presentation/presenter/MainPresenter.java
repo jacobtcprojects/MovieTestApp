@@ -2,6 +2,7 @@ package com.challenge.jacobtcantera.movietestapp.presentation.presenter;
 
 import android.support.annotation.Nullable;
 
+import com.challenge.jacobtcantera.movietestapp.domain.usecase.GetMoviesUseCase;
 import com.challenge.jacobtcantera.movietestapp.domain.model.Movie;
 import com.challenge.jacobtcantera.movietestapp.domain.model.mapper.MovieMapper;
 import com.challenge.jacobtcantera.movietestapp.rest.MovieApiService;
@@ -12,14 +13,11 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
-
 /**
  * Created by jacob on 20/01/2018.
  */
 
-public class MainPresenter {
+public class MainPresenter implements GetMoviesUseCase.Callback {
 
     private int page;
     private MovieApiService movieApiService;
@@ -38,13 +36,13 @@ public class MainPresenter {
 
     @Nullable private View view;
 
-    private RestServiceManager restServiceManager;
     private MovieMapper movieMapper;
+    private GetMoviesUseCase getMoviesUseCase;
 
     @Inject
-    public MainPresenter(RestServiceManager restServiceManager, MovieMapper movieMapper) {
-        this.restServiceManager = restServiceManager;
+    public MainPresenter(MovieMapper movieMapper, GetMoviesUseCase getMoviesUseCase) {
         this.movieMapper = movieMapper;
+        this.getMoviesUseCase = getMoviesUseCase;
     }
 
     public void initView(View view) {
@@ -58,13 +56,15 @@ public class MainPresenter {
 
     public void getMovies() {
         if (view != null && !isProgressShown()) view.showProgress();
-        restServiceManager
-                .getMovieApiService()
-                .getPopularMovies(restServiceManager.getApiKey(), page)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(movieResponse -> addMovies(movieResponse),
-                        throwable -> showError());
+        getMoviesUseCase.execute(page, this);
+    }
+
+    @Override public void onSuccess(MovieResponse movieResponse) {
+        addMovies(movieResponse);
+    }
+
+    @Override public void onError() {
+        showError();
     }
 
     private void addMovies(MovieResponse movieResponse) {
@@ -96,9 +96,6 @@ public class MainPresenter {
     }
 
     private boolean isProgressShown() {
-        if (view != null) {
-            return view.isProgressShown();
-        }
-        return false;
+        return view != null && view.isProgressShown();
     }
 }
