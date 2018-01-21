@@ -4,8 +4,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -29,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
     @BindView(R.id.rv_movies) RecyclerView rvMovies;
     @BindView(R.id.progress) LinearLayout progress;
     @BindView(R.id.btn_retry) Button retryButton;
+    @BindView(R.id.edt_search) EditText editTextSearch;
     private MovieAdapter adapter;
 
     @Override
@@ -47,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
         rvMovies.setAdapter(adapter);
         rvMovies.setLayoutManager(new LinearLayoutManager(this));
         addScrollListener();
+        addTextChangedListener();
     }
 
     private void addScrollListener() {
@@ -58,14 +63,38 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
                         (LinearLayoutManager) recyclerView.getLayoutManager();
                 if (layoutManager.findLastVisibleItemPosition()
                         == layoutManager.getItemCount() - 1) {
-                    presenter.loadMoreMovies();
+                    if (editTextSearch.getText() != null &&
+                            !editTextSearch.getText().toString().equals("")) {
+                        presenter.searchMoreMoviesByKeyword(editTextSearch.getText().toString());
+                    } else {
+                        presenter.loadMorePopularMovies();
+                    }
                 }
             }
         });
     }
 
-    @OnClick(R.id.btn_retry)
-    public void clickRetry() {
+    private void addTextChangedListener() {
+        editTextSearch.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override public void afterTextChanged(Editable editable) {
+                adapter.clearList();
+                presenter.resetPage();
+                if (!editable.toString().equals("")) {
+                    presenter.getMoviesByKeyWord(editable.toString());
+                } else {
+                    presenter.getMovies();
+                }
+            }
+        });
+    }
+
+    @OnClick(R.id.btn_retry) public void clickRetry() {
         hideRetryButton();
         presenter.getMovies();
     }

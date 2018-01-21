@@ -51,6 +51,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         listOfMovies.addAll(list);
         notifyItemRangeInserted(size, listOfMovies.size()-1);
     }
+    public void clearList(){
+        listOfMovies.clear();
+        notifyDataSetChanged();
+    }
 
     class ViewHolder extends RecyclerView.ViewHolder {
         private Movie movie;

@@ -2,11 +2,12 @@ package com.challenge.jacobtcantera.movietestapp.presentation.presenter;
 
 import android.support.annotation.Nullable;
 
-import com.challenge.jacobtcantera.movietestapp.domain.usecase.GetMoviesUseCase;
 import com.challenge.jacobtcantera.movietestapp.domain.model.Movie;
 import com.challenge.jacobtcantera.movietestapp.domain.model.mapper.MovieMapper;
+import com.challenge.jacobtcantera.movietestapp.domain.usecase.GetMoviesByKeywordUseCase;
+import com.challenge.jacobtcantera.movietestapp.domain.usecase.GetMoviesUseCase;
+import com.challenge.jacobtcantera.movietestapp.domain.usecase.MovieCallback;
 import com.challenge.jacobtcantera.movietestapp.rest.MovieApiService;
-import com.challenge.jacobtcantera.movietestapp.rest.RestServiceManager;
 import com.challenge.jacobtcantera.movietestapp.rest.response.MovieResponse;
 
 import java.util.List;
@@ -17,10 +18,9 @@ import javax.inject.Inject;
  * Created by jacob on 20/01/2018.
  */
 
-public class MainPresenter implements GetMoviesUseCase.Callback {
+public class MainPresenter implements MovieCallback {
 
     private int page;
-    private MovieApiService movieApiService;
 
     public interface View {
         void addMovies(List<Movie> list);
@@ -38,11 +38,15 @@ public class MainPresenter implements GetMoviesUseCase.Callback {
 
     private MovieMapper movieMapper;
     private GetMoviesUseCase getMoviesUseCase;
+    private GetMoviesByKeywordUseCase getMoviesByKeywordUseCase;
 
     @Inject
-    public MainPresenter(MovieMapper movieMapper, GetMoviesUseCase getMoviesUseCase) {
+    public MainPresenter(MovieMapper movieMapper,
+                         GetMoviesUseCase getMoviesUseCase,
+                         GetMoviesByKeywordUseCase getMoviesByKeywordUseCase) {
         this.movieMapper = movieMapper;
         this.getMoviesUseCase = getMoviesUseCase;
+        this.getMoviesByKeywordUseCase = getMoviesByKeywordUseCase;
     }
 
     public void initView(View view) {
@@ -57,6 +61,11 @@ public class MainPresenter implements GetMoviesUseCase.Callback {
     public void getMovies() {
         if (view != null && !isProgressShown()) view.showProgress();
         getMoviesUseCase.execute(page, this);
+    }
+
+    public void getMoviesByKeyWord(String text){
+        getMoviesByKeywordUseCase.dispose();
+        getMoviesByKeywordUseCase.execute(page, text, this);
     }
 
     @Override public void onSuccess(MovieResponse movieResponse) {
@@ -76,12 +85,21 @@ public class MainPresenter implements GetMoviesUseCase.Callback {
         }
     }
 
-    public void loadMoreMovies() {
+    public void loadMorePopularMovies() {
         if (!isProgressShown()) {
             if (view != null) {
                 view.showProgress();
                 page++;
                 getMovies();
+            }
+        }
+    }
+    public void searchMoreMoviesByKeyword(String text) {
+        if (!isProgressShown()) {
+            if (view != null) {
+                view.showProgress();
+                page++;
+                getMoviesByKeyWord(text);
             }
         }
     }
@@ -97,5 +115,9 @@ public class MainPresenter implements GetMoviesUseCase.Callback {
 
     private boolean isProgressShown() {
         return view != null && view.isProgressShown();
+    }
+
+    public void resetPage() {
+        this.page = 1;
     }
 }
