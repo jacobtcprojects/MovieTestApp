@@ -1,6 +1,8 @@
 package com.challenge.jacobtcantera.movietestapp.presentation.view.activities;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -28,12 +30,15 @@ import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity implements MainPresenter.View {
 
+    public static final int DELAY_MILLIS = 500;
     @Inject MainPresenter presenter;
     @BindView(R.id.rv_movies) RecyclerView rvMovies;
     @BindView(R.id.progress) LinearLayout progress;
     @BindView(R.id.btn_retry) Button retryButton;
     @BindView(R.id.edt_search) EditText editTextSearch;
     private MovieAdapter adapter;
+    Handler handler = new Handler(Looper.getMainLooper());
+    Runnable workRunnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
         ButterKnife.bind(this);
         initViews();
         presenter.initView(this);
-        presenter.getMovies();
+        presenter.getPopularMovies();
     }
 
     private void initViews() {
@@ -62,16 +67,20 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
                 LinearLayoutManager layoutManager =
                         (LinearLayoutManager) recyclerView.getLayoutManager();
                 if (layoutManager.findLastVisibleItemPosition()
-                        == layoutManager.getItemCount() - 1) {
-                    if (editTextSearch.getText() != null &&
-                            !editTextSearch.getText().toString().equals("")) {
-                        presenter.searchMoreMoviesByKeyword(editTextSearch.getText().toString());
-                    } else {
-                        presenter.loadMorePopularMovies();
-                    }
+                        == layoutManager.getItemCount() - 2) {
+                    loadMore();
                 }
             }
         });
+    }
+
+    private void loadMore() {
+        if (editTextSearch.getText() != null &&
+                !editTextSearch.getText().toString().isEmpty()) {
+            presenter.searchMoreMoviesByKeyword(editTextSearch.getText().toString());
+        } else {
+            presenter.loadMorePopularMovies();
+        }
     }
 
     private void addTextChangedListener() {
@@ -83,20 +92,26 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
             }
 
             @Override public void afterTextChanged(Editable editable) {
-                adapter.clearList();
-                presenter.resetPage();
-                if (!editable.toString().equals("")) {
-                    presenter.getMoviesByKeyWord(editable.toString());
-                } else {
-                    presenter.getMovies();
-                }
+                handler.removeCallbacks(workRunnable);
+                workRunnable = () -> searchAfterTextChanges(editable.toString());
+                handler.postDelayed(workRunnable, DELAY_MILLIS);
             }
         });
     }
 
+    private void searchAfterTextChanges(String query) {
+        adapter.clearList();
+        presenter.resetPage();
+        if (!query.isEmpty()) {
+            presenter.getMoviesByKeyWord(query);
+        } else {
+            presenter.getPopularMovies();
+        }
+    }
+
     @OnClick(R.id.btn_retry) public void clickRetry() {
         hideRetryButton();
-        presenter.getMovies();
+        loadMore();
     }
 
     @Override

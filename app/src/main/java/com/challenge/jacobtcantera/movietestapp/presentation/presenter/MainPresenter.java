@@ -7,7 +7,6 @@ import com.challenge.jacobtcantera.movietestapp.domain.model.mapper.MovieMapper;
 import com.challenge.jacobtcantera.movietestapp.domain.usecase.GetMoviesByKeywordUseCase;
 import com.challenge.jacobtcantera.movietestapp.domain.usecase.GetMoviesUseCase;
 import com.challenge.jacobtcantera.movietestapp.domain.usecase.MovieCallback;
-import com.challenge.jacobtcantera.movietestapp.rest.MovieApiService;
 import com.challenge.jacobtcantera.movietestapp.rest.response.MovieResponse;
 
 import java.util.List;
@@ -58,7 +57,7 @@ public class MainPresenter implements MovieCallback {
         this.view = null;
     }
 
-    public void getMovies() {
+    public void getPopularMovies() {
         if (view != null && !isProgressShown()) view.showProgress();
         getMoviesUseCase.execute(page, this);
     }
@@ -73,6 +72,7 @@ public class MainPresenter implements MovieCallback {
     }
 
     @Override public void onError() {
+        page--;
         showError();
     }
 
@@ -90,7 +90,7 @@ public class MainPresenter implements MovieCallback {
             if (view != null) {
                 view.showProgress();
                 page++;
-                getMovies();
+                getPopularMovies();
             }
         }
     }
