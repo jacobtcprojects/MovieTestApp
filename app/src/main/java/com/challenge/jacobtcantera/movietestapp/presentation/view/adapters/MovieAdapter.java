@@ -24,7 +24,7 @@ import butterknife.ButterKnife;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> {
 
-    List<Movie> listOfMovies = new ArrayList<>();
+    private List<Movie> listOfMovies = new ArrayList<>();
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent,
@@ -47,8 +47,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     }
 
     public void setMovieList(List<Movie> list) {
+        int size = listOfMovies.size();
         listOfMovies.addAll(list);
-        notifyDataSetChanged();
+        notifyItemRangeInserted(size, listOfMovies.size()-1);
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

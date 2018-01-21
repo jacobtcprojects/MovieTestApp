@@ -54,7 +54,8 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                LinearLayoutManager layoutManager =
+                        (LinearLayoutManager) recyclerView.getLayoutManager();
                 if (layoutManager.findLastVisibleItemPosition()
                         == layoutManager.getItemCount() - 1) {
                     presenter.loadMoreMovies();
@@ -92,6 +93,14 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
     @Override
     public void hideRetryButton() {
         retryButton.setVisibility(View.GONE);
+    }
+
+    @Override public void showRecyclerView() {
+        rvMovies.setVisibility(View.VISIBLE);
+    }
+
+    @Override public void hideRecyclerView() {
+        rvMovies.setVisibility(View.GONE);
     }
 
 

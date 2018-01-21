@@ -32,6 +32,8 @@ public class MainPresenter {
         void hideProgress();
         void showRetryButton();
         void hideRetryButton();
+        void showRecyclerView();
+        void hideRecyclerView();
     }
 
     @Nullable private View view;
@@ -61,12 +63,13 @@ public class MainPresenter {
                 .getPopularMovies(restServiceManager.getApiKey(), page)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::addMovies,
+                .subscribe(movieResponse -> addMovies(movieResponse),
                         throwable -> showError());
     }
 
     private void addMovies(MovieResponse movieResponse) {
         if (view != null) {
+            view.showRecyclerView();
             view.hideProgress();
             view.addMovies(movieMapper
                     .transformList(movieResponse.getResults()));
@@ -87,6 +90,7 @@ public class MainPresenter {
         if (view != null) {
             view.hideProgress();
             view.showError();
+            view.hideRecyclerView();
             view.showRetryButton();
         }
     }

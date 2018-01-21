@@ -8,36 +8,35 @@
     tools:context=".presentation.view.activities.MainActivity">
     <Button
         android:id="@+id/btn_retry"
-        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:text="@string/text_button_retry"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:visibility="gone" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_movies"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/progress" />
+        android:layout_height="match_parent" />
 
     <LinearLayout
-        android:background="@android:color/background_dark"
         android:id="@+id/progress"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:layout_alignParentBottom="true"
+        android:layout_alignParentTop="true"
+        android:background="@android:color/background_dark"
         android:gravity="center">
 
         <TextView
-            android:textColor="@android:color/white"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/text_loading_more"
+            android:textColor="@android:color/white"
             android:textStyle="italic" />
 
         <ProgressBar
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
+            android:layout_height="match_parent"
             android:padding="5dp"
             android:visibility="visible" />
     </LinearLayout>
