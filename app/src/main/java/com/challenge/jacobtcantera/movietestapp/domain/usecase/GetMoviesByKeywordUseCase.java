@@ -1,5 +1,6 @@
 package com.challenge.jacobtcantera.movietestapp.domain.usecase;
 
+import com.challenge.jacobtcantera.movietestapp.domain.usecase.callback.MovieCallback;
 import com.challenge.jacobtcantera.movietestapp.rest.RestServiceManager;
 
 import javax.inject.Inject;

@@ -1,4 +1,4 @@
-package com.challenge.jacobtcantera.movietestapp.domain.usecase;
+package com.challenge.jacobtcantera.movietestapp.domain.usecase.callback;
 
 import com.challenge.jacobtcantera.movietestapp.rest.response.MovieResponse;
 

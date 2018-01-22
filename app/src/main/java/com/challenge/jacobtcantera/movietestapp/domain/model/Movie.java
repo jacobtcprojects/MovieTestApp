@@ -10,13 +10,13 @@ public class Movie {
 
     private String title;
     private String overview;
-    private String releaseDate;
+    private String year;
     private String image;
 
-    public Movie(String title, String overview, String releaseDate, String image) {
+    public Movie(String title, String overview, String year, String image) {
         this.title = title;
         this.overview = overview;
-        this.releaseDate = releaseDate;
+        this.year = year;
         this.image = image;
     }
 
@@ -28,8 +28,8 @@ public class Movie {
         return overview;
     }
 
-    public String getReleaseDate() {
-        return releaseDate;
+    public String getYear() {
+        return year;
     }
 
     public String getImage() {

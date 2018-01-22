@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">MovieTestApp</string>
-    <string name="text_loading_more">Loading…</string>
-    <string name="text_button_retry">Retry</string>
-    <string name="text_error_loading">Error loading. Please try again.</string>
+    <!--MainActivity-->
+    <string name="main_activity_loading">Loading…</string>
+    <string name="main_activity_button_retry">Retry</string>
+    <string name="main_activity_error_loading">Error loading. Please try again.</string>
+    <string name="main_activity_error_no_more_results">No more pages available</string>
 </resources>

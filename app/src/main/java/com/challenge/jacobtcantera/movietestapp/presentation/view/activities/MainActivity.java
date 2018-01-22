@@ -59,6 +59,16 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
         addTextChangedListener();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        presenter.destroyView();
+    }
+
+    /**
+     * Infinite scroll method:
+     * If scroll reachs the penultimate visible item, ask for more results to the server.
+     */
     private void addScrollListener() {
         rvMovies.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -101,12 +111,19 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
 
     private void searchAfterTextChanges(String query) {
         adapter.clearList();
+        // After every text change, we want to see the 1st page of the results
         presenter.resetPage();
+        // If user deletes all the query, load popular movies again (as when the app is opened)
         if (!query.isEmpty()) {
             presenter.getMoviesByKeyWord(query);
         } else {
             presenter.getPopularMovies();
         }
+    }
+
+    @Override
+    public void addMovies(List<Movie> list) {
+        adapter.setMovieList(list);
     }
 
     @OnClick(R.id.btn_retry) public void clickRetry() {
@@ -147,20 +164,12 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
         rvMovies.setVisibility(View.GONE);
     }
 
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        presenter.destroyView();
+    @Override public void showNoMoreResultsErrorToast() {
+        Toast.makeText(this, R.string.main_activity_error_no_more_results, Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void addMovies(List<Movie> list) {
-        adapter.setMovieList(list);
-    }
-
-    @Override
-    public void showError() {
-        Toast.makeText(this, R.string.text_error_loading, Toast.LENGTH_SHORT).show();
+    public void showLoadingErrorToast() {
+        Toast.makeText(this, R.string.main_activity_error_loading, Toast.LENGTH_SHORT).show();
     }
 }

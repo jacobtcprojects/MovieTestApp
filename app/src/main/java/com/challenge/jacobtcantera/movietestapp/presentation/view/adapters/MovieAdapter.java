@@ -47,17 +47,16 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     }
 
     public void setMovieList(List<Movie> list) {
-        int size = listOfMovies.size();
         listOfMovies.addAll(list);
-        notifyItemRangeInserted(size, listOfMovies.size()-1);
+        notifyDataSetChanged();
     }
-    public void clearList(){
+
+    public void clearList() {
         listOfMovies.clear();
         notifyDataSetChanged();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        private Movie movie;
         @BindView(R.id.tv_title) TextView textViewTitle;
         @BindView(R.id.tv_release_date) TextView textViewReleaseDate;
         @BindView(R.id.tv_overview) TextView textViewOverview;
@@ -69,10 +68,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
                     itemView);
         }
 
-        public void bind(final Movie movie) {
-            this.movie = movie;
+        void bind(final Movie movie) {
             textViewTitle.setText(movie.getTitle());
-            textViewReleaseDate.setText(movie.getReleaseDate());
+            textViewReleaseDate.setText(movie.getYear());
             textViewOverview.setText(movie.getOverview());
             Glide.with(itemView)
                     .load(movie.getImageUrl())

@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:animateLayoutChanges="true"
+    android:animateLayoutChanges="false"
     android:orientation="vertical"
     tools:context=".presentation.view.activities.MainActivity">
 
@@ -30,7 +30,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:text="@string/text_button_retry"
+        android:text="@string/main_activity_button_retry"
         android:visibility="gone" />
 
     <android.support.v7.widget.RecyclerView
@@ -52,7 +52,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/text_loading_more"
+            android:text="@string/main_activity_loading"
             android:textColor="@android:color/white"
             android:textStyle="italic" />
 

@@ -2,11 +2,11 @@ package com.challenge.jacobtcantera.movietestapp.presentation.presenter;
 
 import android.support.annotation.Nullable;
 
+import com.challenge.jacobtcantera.movietestapp.domain.mapper.MovieMapper;
 import com.challenge.jacobtcantera.movietestapp.domain.model.Movie;
-import com.challenge.jacobtcantera.movietestapp.domain.model.mapper.MovieMapper;
 import com.challenge.jacobtcantera.movietestapp.domain.usecase.GetMoviesByKeywordUseCase;
 import com.challenge.jacobtcantera.movietestapp.domain.usecase.GetMoviesUseCase;
-import com.challenge.jacobtcantera.movietestapp.domain.usecase.MovieCallback;
+import com.challenge.jacobtcantera.movietestapp.domain.usecase.callback.MovieCallback;
 import com.challenge.jacobtcantera.movietestapp.rest.response.MovieResponse;
 
 import java.util.List;
@@ -19,11 +19,9 @@ import javax.inject.Inject;
 
 public class MainPresenter implements MovieCallback {
 
-    private int page;
-
     public interface View {
         void addMovies(List<Movie> list);
-        void showError();
+        void showLoadingErrorToast();
         boolean isProgressShown();
         void showProgress();
         void hideProgress();
@@ -31,10 +29,12 @@ public class MainPresenter implements MovieCallback {
         void hideRetryButton();
         void showRecyclerView();
         void hideRecyclerView();
+        void showNoMoreResultsErrorToast();
     }
 
+    private static final int FIRST_PAGE = 1;
+    private int page;
     @Nullable private View view;
-
     private MovieMapper movieMapper;
     private GetMoviesUseCase getMoviesUseCase;
     private GetMoviesByKeywordUseCase getMoviesByKeywordUseCase;
@@ -50,33 +50,53 @@ public class MainPresenter implements MovieCallback {
 
     public void initView(View view) {
         this.view = view;
-        page = 1;
+        page = FIRST_PAGE;
     }
 
     public void destroyView() {
         this.view = null;
     }
 
+    /**
+     * Executes a usecase to make the Popular Movies API call.
+     * It show the results through a callback.
+     */
     public void getPopularMovies() {
         if (view != null && !isProgressShown()) view.showProgress();
         getMoviesUseCase.execute(page, this);
     }
 
-    public void getMoviesByKeyWord(String text){
+    /**
+     * Executes a usecase to make the Search by keyword API call.
+     * It show the results through a callback.
+     *
+     * @param text keyword we want to search
+     */
+    public void getMoviesByKeyWord(String text) {
+        if (view != null && !isProgressShown()) view.showProgress();
         getMoviesByKeywordUseCase.dispose();
         getMoviesByKeywordUseCase.execute(page, text, this);
     }
 
+    // Callback methods
     @Override public void onSuccess(MovieResponse movieResponse) {
-        addMovies(movieResponse);
+        if (movieResponse.getResults().size() > 0) {
+            addResultMoviesToList(movieResponse);
+        } else {
+            showNoMoreResultsError();
+        }
     }
 
     @Override public void onError() {
-        page--;
-        showError();
+        showLoadingError();
     }
 
-    private void addMovies(MovieResponse movieResponse) {
+    /**
+     * Pass the API response to the Movie list from the adapter
+     *
+     * @param movieResponse API response
+     */
+    private void addResultMoviesToList(MovieResponse movieResponse) {
         if (view != null) {
             view.showRecyclerView();
             view.hideProgress();
@@ -89,27 +109,37 @@ public class MainPresenter implements MovieCallback {
         if (!isProgressShown()) {
             if (view != null) {
                 view.showProgress();
-                page++;
+                addPage();
                 getPopularMovies();
             }
         }
     }
+
     public void searchMoreMoviesByKeyword(String text) {
         if (!isProgressShown()) {
             if (view != null) {
                 view.showProgress();
-                page++;
+                addPage();
                 getMoviesByKeyWord(text);
             }
         }
     }
 
-    private void showError() {
+    private void showLoadingError() {
+        substractPage(); // We don't want to advance to a new page
         if (view != null) {
             view.hideProgress();
-            view.showError();
+            view.showLoadingErrorToast();
             view.hideRecyclerView();
             view.showRetryButton();
+        }
+    }
+
+    private void showNoMoreResultsError() {
+        substractPage(); // We don't want to advance to a new page
+        if (view != null) {
+            view.hideProgress();
+            view.showNoMoreResultsErrorToast();
         }
     }
 
@@ -118,6 +148,14 @@ public class MainPresenter implements MovieCallback {
     }
 
     public void resetPage() {
-        this.page = 1;
+        page = FIRST_PAGE;
+    }
+
+    private void addPage() {
+        page++;
+    }
+
+    private void substractPage() {
+        page--;
     }
 }

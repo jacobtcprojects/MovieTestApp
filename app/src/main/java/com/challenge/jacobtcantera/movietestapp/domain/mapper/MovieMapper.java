@@ -1,4 +1,4 @@
-package com.challenge.jacobtcantera.movietestapp.domain.model.mapper;
+package com.challenge.jacobtcantera.movietestapp.domain.mapper;
 
 import com.challenge.jacobtcantera.movietestapp.domain.model.Movie;
 import com.challenge.jacobtcantera.movietestapp.rest.response.MovieResponse;
@@ -23,7 +23,7 @@ public class MovieMapper {
             movie = new Movie(
                     movieResult.getTitle(),
                     movieResult.getOverview(),
-                    movieResult.getReleaseDate(),
+                    movieResult.getReleaseDate().split("-")[0],
                     movieResult.getPosterPath());
         }
         return movie;
