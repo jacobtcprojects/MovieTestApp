@@ -1,6 +1,6 @@
 # MovieTestApp
-Simple app for technical test .
-It shows a lis of popular movies, with infinite scroll, and allows the user to search movies by keyword, and the results are shown in real time.
+Simple app for technical test.
+It shows a list of popular movies, with infinite scroll, and allows the user to search movies by keyword, and the results are shown in real time.
 
 Features:
 * Dagger 2 for DI
